@@ -89,8 +89,9 @@ def IK(x,y,z):
         b=1
     y=abs(y)
     print(y)
-    z=math.sqrt((y**2)+(z**2))
     yaa=math.atan(y/z)
+    z=math.sqrt((y**2)+(z**2))
+    
     yaa=math.degrees(yaa)
     yaa=yaa*1.25
     xa=math.acos((((z**2)+(tigh**2))-(calve**2))/(2*z*tigh))
@@ -99,31 +100,40 @@ def IK(x,y,z):
     ya=math.degrees(ya)
     za=0
     print(yaa)
-    tr_ang[1]=90-((xa*1.25))+(yaa*1.25)
-    tr_ang[2]=((ya-90)*1.27)+90
+    tr_ang[1]=90-((xa*1.25))+(yaa*b)
+    tr_ang[2]=((ya*1.27))+7
+    br_ang[1]=90-((xa*1.25))+(yaa*b)
+    br_ang[2]=((ya*1.27))+7
+    tl_ang[1]=90-((xa*1.25))+(yaa*b)
+    tl_ang[2]=((ya*1.27))+7
+    bl_ang[1]=90-((xa*1.25))+(yaa*b)
+    bl_ang[2]=((ya*1.27))+7
+
+
 
 
 
     
     return 0,xa,ya
     
+#def interpolate(leg, speed):
     
 def movingServo():
     moveServo(tr1_pin,tr_ang[x]+10)
     moveServo(tr2_pin,180-(tr_ang[y]+10))
-    moveServo(tr3_pin,tr_ang[z]+13)
+    moveServo(tr3_pin,tr_ang[z]-0)
 
     moveServo(tl1_pin,180-(tl_ang[x]+24))
     moveServo(tl2_pin,tl_ang[y]+15)
-    moveServo(tl3_pin,180-(tl_ang[z]+12))
+    moveServo(tl3_pin,180-(tl_ang[z]+2))
     
     moveServo(br1_pin,180-(br_ang[x]+13))
     moveServo(br2_pin,180-(br_ang[y]+14))
-    moveServo(br3_pin,br_ang[z]+4)
+    moveServo(br3_pin,br_ang[z]-6)
 
     moveServo(bl1_pin,bl_ang[x]+10)
     moveServo(bl2_pin,bl_ang[y]+17)
-    moveServo(bl3_pin,180-(bl_ang[z]+19))
+    moveServo(bl3_pin,180-(bl_ang[z]+11))
 
 
 
