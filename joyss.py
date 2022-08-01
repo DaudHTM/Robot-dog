@@ -29,6 +29,8 @@ tl_ik=[0.0,0.0,0.0]
 bl_ik=[0.0,0.0,0.0]
 br_ik=[0.0,0.0,0.0]
 
+tr_speed, br_speed, bl_speed, tl_speed= 1, 1, 1, 1
+
 tr_ang=[90.0,90.0,90.0]
 tl_ang=[90.0,90.0,90.0]
 bl_ang=[90.0,90.0,90.0]
@@ -97,8 +99,8 @@ def IK(x,y,z):
     ya=math.degrees(ya)
     za=0
     print(yaa)
-    tr_ang[1]=90-((xa*1.25)-12)+(yaa*1.25)
-    tr_ang[2]=((ya-90)*1.25)+90
+    tr_ang[1]=90-((xa*1.25))+(yaa*1.25)
+    tr_ang[2]=((ya-90)*1.27)+90
 
 
 
@@ -135,25 +137,14 @@ try:
         yas=10
         bas=0
         sped=0
-        yas=float(input("enter y dist "))
-        bas=float(input("enter x dist "))
-        sped=int(input("enter speed of motor"))
-        if sped<0:
-            GPIO.output(right_back, GPIO.HIGH)
-            GPIO.output(right_front,GPIO.LOW)
+        Y=float(input("enter y dist "))
+        X=float(input("enter x dist "))
 
-            GPIO.output(left_back, GPIO.HIGH)
-            GPIO.output(left_front,GPIO.LOW)
-        else:
-            GPIO.output(right_back, GPIO.LOW)
-            GPIO.output(right_front,GPIO.HIGH)
 
-            GPIO.output(left_back, GPIO.LOW)
-            GPIO.output(left_front,GPIO.HIGH)
-        sped=abs(sped)
-        right_motor.start(sped)
-        left_motor.start(sped)
-        print(IK(0.0,bas,yas))
+        right_motor.start(0)
+        left_motor.start(0)
+        
+        print(IK(0.0,X,Y))
 except KeyboardInterrupt:
     
     GPIO.cleanup()
