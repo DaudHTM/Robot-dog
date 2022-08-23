@@ -31,10 +31,10 @@ br_ik=[0.0,0.0,0.0]
 
 tr_speed, br_speed, bl_speed, tl_speed= 1, 1, 1, 1
 
-tr_ang=[90.0,90.0,90.0]
-tl_ang=[90.0,90.0,90.0]
-bl_ang=[90.0,90.0,90.0]
-br_ang=[90.0,90.0,90.0]
+tr_ang=[90.0,122.6,122.6]
+tl_ang=[90.0,122.6,122.6]
+bl_ang=[90.0,122.6,122.6]
+br_ang=[90.0,122.6,122.6]
 
 
 
@@ -82,32 +82,27 @@ def moveServo(pin, ang):
     pi.set_servo_pulsewidth(pin,(ang*11.1111)+500)
     
 def IK(x,y,z):
-    
+    b=1
     if y<0:
         b=-1
-    else:
-        b=1
-    y=abs(y)
-    print(y)
-    yaa=math.atan(y/z)
-    z=math.sqrt((y**2)+(z**2))
+
+        
+    yAng=math.atan(y/z)
+    yAng=math.degrees(yAng)
+    yHyp=math.sqrt((y**2)+(z**2))
     
-    yaa=math.degrees(yaa)
-    yaa=yaa*1.25
+    z=yHyp
+    
     xa=math.acos((((z**2)+(tigh**2))-(calve**2))/(2*z*tigh))
     xa=math.degrees(xa)
     ya=math.acos((((tigh**2)+(calve**2))-(z**2))/(2*tigh*calve))
     ya=math.degrees(ya)
-    za=0
-    print(yaa)
-    tr_ang[1]=90-((xa*1.25))+(yaa*b)
-    tr_ang[2]=((ya*1.27))+7
-    br_ang[1]=90-((xa*1.25))+(yaa*b)
-    br_ang[2]=((ya*1.27))+7
-    tl_ang[1]=90-((xa*1.25))+(yaa*b)
-    tl_ang[2]=((ya*1.27))+7
-    bl_ang[1]=90-((xa*1.25))+(yaa*b)
-    bl_ang[2]=((ya*1.27))+7
+    
+    
+  
+    tr_ang[1]=(90-((xa*1.363)))+(yAng*1.363*b)
+    tr_ang[2]=ya*1.363
+ 
 
 
 
@@ -120,20 +115,20 @@ def IK(x,y,z):
     
 def movingServo():
     moveServo(tr1_pin,tr_ang[x]+10)
-    moveServo(tr2_pin,180-(tr_ang[y]+10))
-    moveServo(tr3_pin,tr_ang[z]-0)
+    moveServo(tr2_pin,180-(tr_ang[y]-17))
+    moveServo(tr3_pin,tr_ang[z]-18)
 
     moveServo(tl1_pin,180-(tl_ang[x]+24))
-    moveServo(tl2_pin,tl_ang[y]+15)
-    moveServo(tl3_pin,180-(tl_ang[z]+2))
+    moveServo(tl2_pin,tl_ang[y]-10)
+    moveServo(tl3_pin,180-(tl_ang[z])+18)
     
     moveServo(br1_pin,180-(br_ang[x]+13))
-    moveServo(br2_pin,180-(br_ang[y]+14))
-    moveServo(br3_pin,br_ang[z]-6)
+    moveServo(br2_pin,180-(br_ang[y]-12))
+    moveServo(br3_pin,br_ang[z]-22)
 
     moveServo(bl1_pin,bl_ang[x]+10)
-    moveServo(bl2_pin,bl_ang[y]+17)
-    moveServo(bl3_pin,180-(bl_ang[z]+11))
+    moveServo(bl2_pin,bl_ang[y]+5)
+    moveServo(bl3_pin,180-(bl_ang[z])+14)
 
 
 
@@ -149,12 +144,12 @@ try:
         sped=0
         Y=float(input("enter y dist "))
         X=float(input("enter x dist "))
-
+        zat=float(input("etner z dist"))
 
         right_motor.start(0)
         left_motor.start(0)
         
-        print(IK(0.0,X,Y))
+        print(IK(zat,X,Y))
 except KeyboardInterrupt:
     
     GPIO.cleanup()
