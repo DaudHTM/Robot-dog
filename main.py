@@ -2,7 +2,7 @@ import RPi.GPIO as GPIO
 import pigpio
 from time import sleep
 import math
-
+import Ik
 
 GPIO.setmode(GPIO.BOARD)
 pi=pigpio.pi()
@@ -81,41 +81,17 @@ left_motor.start(00)
 def moveServo(pin, ang):
     pi.set_servo_pulsewidth(pin,(ang*11.1111)+500)
     
-def IK(x,y,z):
-    b=1
-    if y<0:
-        b=-1
-
-        
-    yAng=math.atan(y/z)
-    yAng=math.degrees(yAng)
-    yHyp=math.sqrt((y**2)+(z**2))
-    
-    z=yHyp
-    
-    xa=math.acos((((z**2)+(tigh**2))-(calve**2))/(2*z*tigh))
-    xa=math.degrees(xa)
-    ya=math.acos((((tigh**2)+(calve**2))-(z**2))/(2*tigh*calve))
-    ya=math.degrees(ya)
+def Interpolate(x,y,z):
+    print("F")
     
     
-  
-    tr_ang[1]=(90-((xa*1.363)))+(yAng*1.363*b)
-    tr_ang[2]=ya*1.363
- 
 
-
-
-
-
-    
-    return 0,xa,ya
     
 #def interpolate(leg, speed):
     
 def movingServo():
     moveServo(tr1_pin,tr_ang[x]+10)
-    moveServo(tr2_pin,180-(tr_ang[y]-17))
+    moveServo(tr2_pin,180-(tr_ang[y]-23))
     moveServo(tr3_pin,tr_ang[z]-18)
 
     moveServo(tl1_pin,180-(tl_ang[x]+24))
@@ -123,11 +99,11 @@ def movingServo():
     moveServo(tl3_pin,180-(tl_ang[z])+18)
     
     moveServo(br1_pin,180-(br_ang[x]+13))
-    moveServo(br2_pin,180-(br_ang[y]-12))
+    moveServo(br2_pin,180-(br_ang[y]-17))
     moveServo(br3_pin,br_ang[z]-22)
 
     moveServo(bl1_pin,bl_ang[x]+10)
-    moveServo(bl2_pin,bl_ang[y]+5)
+    moveServo(bl2_pin,bl_ang[y]-8)
     moveServo(bl3_pin,180-(bl_ang[z])+14)
 
 
@@ -149,7 +125,10 @@ try:
         right_motor.start(0)
         left_motor.start(0)
         
-        print(IK(zat,X,Y))
+        tr_ang=Ik.IK(-zat,X,Y)
+        br_ang=Ik.IK(-zat,X,Y)
+        bl_ang=Ik.IK(zat,X,Y)
+        tl_ang=Ik.IK(zat,X,Y)
 except KeyboardInterrupt:
     
     GPIO.cleanup()
