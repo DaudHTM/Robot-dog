@@ -1,17 +1,15 @@
 import RPi.GPIO as GPIO
 import pigpio
-from time import sleep
+
 import math
 import Ik
-
+import moveServo
+import interpolate
 GPIO.setmode(GPIO.BOARD)
 pi=pigpio.pi()
 
-# pins for all the servos
-tl1_pin, tl2_pin, tl3_pin = 2, 3, 4
-tr1_pin, tr2_pin, tr3_pin = 17, 27, 22
-br1_pin, br2_pin, br3_pin = 10, 9, 11
-bl1_pin, bl2_pin, bl3_pin = 16, 20, 21
+
+
 
 #length of the thight and calves in cm
 tigh, calve = 11.9824, 9.9847
@@ -31,27 +29,17 @@ br_ik=[0.0,0.0,0.0]
 
 tr_speed, br_speed, bl_speed, tl_speed= 1, 1, 1, 1
 
-tr_ang=[90.0,122.6,122.6]
-tl_ang=[90.0,122.6,122.6]
-bl_ang=[90.0,122.6,122.6]
-br_ang=[90.0,122.6,122.6]
+tr_Tang=[90.0,122.6,122.6]
+tl_Tang=[90.0,122.6,122.6]
+bl_Tang=[90.0,122.6,122.6]
+br_Tang=[90.0,122.6,122.6]
+
+tr_Cang=[90.0,122.6,122.6]
+tl_Cang=[90.0,122.6,122.6]
+bl_Cang=[90.0,122.6,122.6]
+br_Cang=[90.0,122.6,122.6]
 
 
-
-#servo pins as outputs
-pi.set_mode(tr1_pin,pigpio.OUTPUT)
-pi.set_mode(tr2_pin,pigpio.OUTPUT)
-pi.set_mode(tr3_pin,pigpio.OUTPUT)
-pi.set_mode(tl1_pin,pigpio.OUTPUT)
-pi.set_mode(tl2_pin,pigpio.OUTPUT)
-pi.set_mode(tl3_pin,pigpio.OUTPUT)
-pi.set_mode(br1_pin,pigpio.OUTPUT)
-pi.set_mode(br2_pin,pigpio.OUTPUT)
-pi.set_mode(br3_pin,pigpio.OUTPUT)
-pi.set_mode(bl1_pin,pigpio.OUTPUT)
-pi.set_mode(bl2_pin,pigpio.OUTPUT)
-pi.set_mode(bl3_pin,pigpio.OUTPUT)
-pi.set_servo_pulsewidth(16,1800)
 
 #pins for the motor driver
 right_en, right_back, right_front = 8, 10, 12
@@ -78,34 +66,6 @@ left_motor=GPIO.PWM(left_en,1000)
 right_motor.start(00)
 left_motor.start(00)
 
-def moveServo(pin, ang):
-    pi.set_servo_pulsewidth(pin,(ang*11.1111)+500)
-    
-def Interpolate(x,y,z):
-    print("F")
-    
-    
-
-    
-#def interpolate(leg, speed):
-    
-def movingServo():
-    moveServo(tr1_pin,tr_ang[x]+10)
-    moveServo(tr2_pin,180-(tr_ang[y]-23))
-    moveServo(tr3_pin,tr_ang[z]-18)
-
-    moveServo(tl1_pin,180-(tl_ang[x]+24))
-    moveServo(tl2_pin,tl_ang[y]-10)
-    moveServo(tl3_pin,180-(tl_ang[z])+18)
-    
-    moveServo(br1_pin,180-(br_ang[x]+13))
-    moveServo(br2_pin,180-(br_ang[y]-17))
-    moveServo(br3_pin,br_ang[z]-22)
-
-    moveServo(bl1_pin,bl_ang[x]+10)
-    moveServo(bl2_pin,bl_ang[y]-8)
-    moveServo(bl3_pin,180-(bl_ang[z])+14)
-
 
 
 
@@ -113,22 +73,30 @@ try:
     while True:
         
         
-        movingServo()
-        sleep(.2)
+        
+        
         yas=10
         bas=0
         sped=0
-        Y=float(input("enter y dist "))
-        X=float(input("enter x dist "))
-        zat=float(input("etner z dist"))
+        if int(tr_Cang[1])==int(tr_Tang[1]):
+            Y=float(input("enter y dist "))
+            X=float(input("enter x dist "))
+            zat=float(input("etner z dist"))
 
         right_motor.start(0)
         left_motor.start(0)
         
-        tr_ang=Ik.IK(-zat,X,Y)
-        br_ang=Ik.IK(-zat,X,Y)
-        bl_ang=Ik.IK(zat,X,Y)
-        tl_ang=Ik.IK(zat,X,Y)
+        tr_Tang=Ik.IK(zat,X,Y)
+        br_Tang=Ik.IK(zat,X,Y)
+        bl_Tang=Ik.IK(-zat,X,Y)
+        tl_Tang=Ik.IK(-zat,X,Y)
+        
+        while tr_Cang!=tr_Tang or tl_Cang!=tl_Tang:
+            tr_Cang=interpolate.interpolate(1.5,tr_Tang[0],tr_Tang[1],tr_Tang[2],tr_Cang[0],tr_Cang[1],tr_Cang[2])
+        
+            tl_Cang=interpolate.interpolate(1.5,tl_Tang[0],tl_Tang[1],tl_Tang[2],tl_Cang[0],tl_Cang[1],tl_Cang[2])
+            
+            moveServo.movingServo(tr_Cang, br_Cang, tl_Cang, bl_Cang)
 except KeyboardInterrupt:
     
     GPIO.cleanup()
