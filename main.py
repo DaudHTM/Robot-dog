@@ -15,7 +15,7 @@ pi=pigpio.pi()
 tigh, calve = 11.9824, 9.9847
 
 z_offset=5.4
-
+stated = 0
 #IK variables
 
 x=0
@@ -78,25 +78,58 @@ try:
         yas=10
         bas=0
         sped=0
+        walkXspeed=.4
+        walkYspeed=.4
+        """
         if int(tr_Cang[1])==int(tr_Tang[1]):
             Y=float(input("enter y dist "))
             X=float(input("enter x dist "))
             zat=float(input("etner z dist"))
-
+        """
         right_motor.start(0)
         left_motor.start(0)
+      
         
-        tr_Tang=Ik.IK(zat,X,Y)
-        br_Tang=Ik.IK(zat,X,Y)
-        bl_Tang=Ik.IK(-zat,X,Y)
-        tl_Tang=Ik.IK(-zat,X,Y)
-        
-        while tr_Cang!=tr_Tang or tl_Cang!=tl_Tang:
-            tr_Cang=interpolate.interpolate(1.5,tr_Tang[0],tr_Tang[1],tr_Tang[2],tr_Cang[0],tr_Cang[1],tr_Cang[2])
-        
-            tl_Cang=interpolate.interpolate(1.5,tl_Tang[0],tl_Tang[1],tl_Tang[2],tl_Cang[0],tl_Cang[1],tl_Cang[2])
+        if stated==0:
+            tl_Tang=Ik.IK(0,-3,18)
+            tr_Tang=Ik.IK(0,-3,13)
+            bl_Tang=Ik.IK(0,-3,13)
+            br_Tang=Ik.IK(0,-3,18)
+            walkYspeed=.65
+            walkXspeed=.65
+        elif stated==1:
+            tl_Tang=Ik.IK(0,-3,13)
+            tr_Tang=Ik.IK(0,-3,18)
+            bl_Tang=Ik.IK(0,-3,18)
+            br_Tang=Ik.IK(0,-3,13)
+            walkYspeed=.65
+            walkXspeed=.65
+        elif stated==2:
+            tl_Tang=Ik.IK(0,-3,18)
+            tr_Tang=Ik.IK(0,-3,13)
+            bl_Tang=Ik.IK(0,-3,13)
+            br_Tang=Ik.IK(0,-3,18)
+            walkXspeed=.65
+            walkYspeed=.65
+        elif stated==3:
+            tl_Tang=Ik.IK(0,-3,13)
+            tr_Tang=Ik.IK(0,-3,18)
+            bl_Tang=Ik.IK(0,-3,18)
+            br_Tang=Ik.IK(0,-3,13)
+            walkXspeed=.65
+            walkYspeed=.65
             
+        while tr_Cang!=tr_Tang or tl_Cang!=tl_Tang:
+            tr_Cang=interpolate.interpolate(walkYspeed,tr_Tang[0],tr_Tang[1],tr_Tang[2],tr_Cang[0],tr_Cang[1],tr_Cang[2])
+        
+            br_Cang=interpolate.interpolate(walkXspeed,br_Tang[0],br_Tang[1],br_Tang[2],br_Cang[0],br_Cang[1],br_Cang[2])
+            
+            tl_Cang = br_Cang
+            bl_Cang = tr_Cang
             moveServo.movingServo(tr_Cang, br_Cang, tl_Cang, bl_Cang)
+        stated +=1
+        if stated>3:
+            stated=0
 except KeyboardInterrupt:
     
     GPIO.cleanup()
